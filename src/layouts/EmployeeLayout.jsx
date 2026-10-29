@@ -1,13 +1,149 @@
-import React,{useState} from 'react';
-import {NavLink,Outlet,useLocation} from 'react-router-dom';
-import {LayoutDashboard,UtensilsCrossed,ChefHat,Wallet,CalendarDays,BookOpen,Users,ChartColumn,UserCircle,LogOut,Menu,X} from 'lucide-react';
-import {useAuth} from '../modules/auth/AuthProvider';
-import {isDemo} from '../services/supabaseClient';
-import {Notice} from '../shared/components/UI';
-const links=[['inicio','Inicio',LayoutDashboard,['gerente','mesero','cocinero','cajero']],['salon','Salón y mesas',UtensilsCrossed,['gerente','mesero']],['cocina','Cocina',ChefHat,['gerente','cocinero']],['caja','Caja',Wallet,['gerente','cajero']],['reservas','Reservas',CalendarDays,['gerente','mesero']],['menu','Menú',BookOpen,['gerente']],['empleados','Personal',Users,['gerente']],['reportes','Reportes',ChartColumn,['gerente']],['mi-cuenta','Mi cuenta',UserCircle,['gerente','mesero','cocinero','cajero']]];
-export default function EmployeeLayout(){const auth=useAuth(),location=useLocation();const [open,setOpen]=useState(false),[error,setError]=useState(''),[busy,setBusy]=useState(false);const active=links.find(([path])=>location.pathname.endsWith('/'+path));
-return <div className="employee-shell"><aside className={`sidebar ${open?'open':''}`}><NavLink className="brand" to="/personal/inicio">popular<span>cocina boliviana</span></NavLink><div className="sidebar-caption">ESPACIO DEL EQUIPO</div><nav aria-label="Navegación del personal">{links.filter(l=>l[3].includes(auth.userRole)).map(([path,label,Icon])=><NavLink key={path} to={'/personal/'+path} onClick={()=>setOpen(false)}><Icon size={19}/><span>{label}</span></NavLink>)}</nav><div className="sidebar-bottom"><span className="status-dot"/>{isDemo?'Datos de demostración':'Conectado a Supabase'}<small>La Paz, Bolivia · UTC−4</small></div></aside>{open&&<button className="nav-scrim" aria-label="Cerrar menú" onClick={()=>setOpen(false)}/>}
-<div className="workspace"><header className="topbar"><button className="mobile-toggle" aria-label={open?'Cerrar navegación':'Abrir navegación'} onClick={()=>setOpen(!open)}>{open?<X size={21}/>:<Menu size={21}/>}</button><div className="breadcrumb">Personal <span>/</span> <strong>{active?.[1]||'Portal'}</strong></div><div className="topbar-account"><span className="avatar">{auth.userProfile?.nombre?.charAt(0)||'P'}</span><div><strong>{auth.userProfile?.nombre||'Empleado'}</strong><small>{auth.userRole}</small></div><button className="icon-button" title="Cerrar sesión" aria-label="Cerrar sesión" disabled={busy} onClick={async()=>{setBusy(true);try{await auth.logout();}catch(e){setError(e.message);}finally{setBusy(false);}}}><LogOut size={18}/></button></div></header>
-{isDemo&&<div className="demo-banner"><strong>Modo demostración</strong><span>Datos locales de ejemplo. No se está leyendo ni modificando Supabase.</span><NavLink to="/personal/mi-cuenta">Mi cuenta</NavLink></div>}
-<main className="page-content"><Notice error>{error}</Notice><Outlet/></main><footer className="workspace-footer">popular · portal del personal<span>Cocina boliviana, trabajo compartido.</span></footer></div></div>;
+import React, { useState } from "react";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
+import {
+  LayoutDashboard,
+  UtensilsCrossed,
+  ChefHat,
+  Wallet,
+  CalendarDays,
+  BookOpen,
+  Users,
+  ChartColumn,
+  UserCircle,
+  LogOut,
+  Menu,
+  X,
+} from "lucide-react";
+import { useAuth } from "../modules/auth/AuthProvider";
+import { isDemo } from "../services/supabaseClient";
+import { Notice } from "../shared/components/UI";
+import Brand from "../shared/components/Brand";
+const links = [
+  [
+    "inicio",
+    "Inicio",
+    LayoutDashboard,
+    ["gerente", "mesero", "cocinero", "cajero"],
+  ],
+  ["salon", "Salón y mesas", UtensilsCrossed, ["gerente", "mesero"]],
+  ["cocina", "Cocina", ChefHat, ["gerente", "cocinero"]],
+  ["caja", "Caja", Wallet, ["gerente", "cajero"]],
+  ["reservas", "Reservas", CalendarDays, ["gerente", "mesero"]],
+  ["menu", "Menú", BookOpen, ["gerente"]],
+  ["empleados", "Personal", Users, ["gerente"]],
+  ["reportes", "Reportes", ChartColumn, ["gerente"]],
+  [
+    "mi-cuenta",
+    "Mi cuenta",
+    UserCircle,
+    ["gerente", "mesero", "cocinero", "cajero"],
+  ],
+];
+export default function EmployeeLayout() {
+  const auth = useAuth(),
+    location = useLocation();
+  const [open, setOpen] = useState(false),
+    [error, setError] = useState(""),
+    [busy, setBusy] = useState(false);
+  const active = links.find(([path]) => location.pathname.endsWith("/" + path));
+  return (
+    <div className="employee-shell">
+      <aside className={`sidebar ${open ? "open" : ""}`}>
+        <NavLink
+          className="brand"
+          to="/personal/inicio"
+          aria-label="Popular Cocina Boliviana"
+        >
+          <Brand claro />
+        </NavLink>
+        <div className="sidebar-caption">ESPACIO DEL EQUIPO</div>
+        <nav aria-label="Navegación del personal">
+          {links
+            .filter((l) => l[3].includes(auth.userRole))
+            .map(([path, label, Icon]) => (
+              <NavLink
+                key={path}
+                to={"/personal/" + path}
+                onClick={() => setOpen(false)}
+              >
+                <Icon size={19} />
+                <span>{label}</span>
+              </NavLink>
+            ))}
+        </nav>
+        <div className="sidebar-bottom">
+          <span className="status-dot" />
+          {isDemo ? "Datos de demostración" : "Conectado a Supabase"}
+          <NavLink to="/">Ver sitio público</NavLink>
+          <small>La Paz, Bolivia · UTC−4</small>
+        </div>
+      </aside>
+      {open && (
+        <button
+          className="nav-scrim"
+          aria-label="Cerrar menú"
+          onClick={() => setOpen(false)}
+        />
+      )}
+      <div className="workspace">
+        <header className="topbar">
+          <button
+            className="mobile-toggle"
+            aria-label={open ? "Cerrar navegación" : "Abrir navegación"}
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <X size={21} /> : <Menu size={21} />}
+          </button>
+          <div className="breadcrumb">
+            Personal <span>/</span> <strong>{active?.[1] || "Portal"}</strong>
+          </div>
+          <div className="topbar-account">
+            <span className="avatar">
+              {auth.userProfile?.nombre?.charAt(0) || "P"}
+            </span>
+            <div>
+              <strong>{auth.userProfile?.nombre || "Empleado"}</strong>
+              <small>{auth.userRole}</small>
+            </div>
+            <button
+              className="icon-button"
+              title="Cerrar sesión"
+              aria-label="Cerrar sesión"
+              disabled={busy}
+              onClick={async () => {
+                setBusy(true);
+                try {
+                  await auth.logout();
+                } catch (e) {
+                  setError(e.message);
+                } finally {
+                  setBusy(false);
+                }
+              }}
+            >
+              <LogOut size={18} />
+            </button>
+          </div>
+        </header>
+        {isDemo && (
+          <div className="demo-banner">
+            <strong>Modo demostración</strong>
+            <span>
+              Datos locales de ejemplo. No se está leyendo ni modificando
+              Supabase.
+            </span>
+            <NavLink to="/personal/mi-cuenta">Mi cuenta</NavLink>
+          </div>
+        )}
+        <main className="page-content">
+          <Notice error>{error}</Notice>
+          <Outlet />
+        </main>
+        <footer className="workspace-footer">
+          popular · portal del personal
+          <span>Cocina boliviana, trabajo compartido.</span>
+        </footer>
+      </div>
+    </div>
+  );
 }

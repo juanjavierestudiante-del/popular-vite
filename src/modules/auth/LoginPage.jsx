@@ -163,6 +163,9 @@ export default function LoginPage() {
         <small>
           El acceso depende del rol y estado de tu perfil de empleado.
         </small>
+        <Link className="login-volver" to="/">
+          ← Volver al sitio público
+        </Link>
       </section>
     </div>
   );
