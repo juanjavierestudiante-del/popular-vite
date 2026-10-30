@@ -141,20 +141,19 @@ pre code {
 }
 
 .marca-popular__logo {
-  display: grid;
+  display: block;
   flex: 0 0 auto;
-  place-items: center;
-  width: 44px;
+  width: auto;
   height: 44px;
-  padding-bottom: 2px;
-  color: var(--crema);
-  font-family: var(--fuente-titulo);
-  font-size: 1.6rem;
-  line-height: 1;
-  background: var(--vino);
-  border: 1px solid var(--terracota);
-  border-radius: 50%;
-  box-shadow: 0 3px 10px rgba(36, 26, 23, 0.25);
+  background: #000;
+  border-radius: 9px;
+  box-shadow: 0 4px 14px rgba(36, 26, 23, 0.2);
+}
+
+.marca-popular--claro .marca-popular__logo {
+  box-shadow:
+    0 0 0 1px rgba(244, 239, 232, 0.16),
+    0 6px 18px rgba(0, 0, 0, 0.35);
 }
 
 .marca-popular__texto {
@@ -191,9 +190,8 @@ pre code {
 }
 
 .marca-popular--grande .marca-popular__logo {
-  width: 64px;
-  height: 64px;
-  font-size: 2.2rem;
+  height: 78px;
+  border-radius: 14px;
 }
 
 .marca-popular--grande .marca-popular__texto strong {
@@ -2578,9 +2576,7 @@ tbody tr:last-child td {
   }
 
   .pub-nav .marca-popular__logo {
-    width: 48px;
-    height: 48px;
-    font-size: 1.75rem;
+    height: 52px;
   }
 
   .pub-nav .marca-popular__texto strong {

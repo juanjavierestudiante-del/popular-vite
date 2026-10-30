@@ -37,9 +37,13 @@ export default function LoginPage() {
   return (
     <div className="login-shell">
       <section className="login-story">
-        <div className="brand-large">
-          popular<span>cocina boliviana</span>
-        </div>
+        <img
+          className="brand-large"
+          src="/images/logo-popular.png"
+          alt="Popular Cocina Boliviana"
+          width="488"
+          height="272"
+        />
         <div>
           <span className="eyebrow">EL EQUIPO DETRÁS DE CADA PLATO</span>
           <h1>
@@ -51,11 +55,6 @@ export default function LoginPage() {
             Un espacio para coordinar el salón, la cocina y la caja. Hecho para
             quienes dan vida a Popular.
           </p>
-        </div>
-        <div className="pennants">
-          <i />
-          <i />
-          <i />
         </div>
         <small>La Paz · Bolivia</small>
       </section>
