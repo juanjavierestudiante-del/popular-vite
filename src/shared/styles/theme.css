@@ -41,6 +41,18 @@
   box-sizing: border-box;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -667,6 +679,444 @@ pre code {
 
 .pub-estado__reintentar:hover {
   background: var(--vino-hover);
+}
+
+/* ------------------------------------------------------------
+   Menú de degustación
+   ------------------------------------------------------------ */
+
+.pub-experiencia {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  align-items: center;
+  padding: clamp(28px, 5vw, 56px);
+  margin-bottom: clamp(56px, 8vw, 88px);
+  background:
+    radial-gradient(
+      circle at 0% 0%,
+      rgba(196, 108, 61, 0.16),
+      transparent 42%
+    ),
+    linear-gradient(135deg, var(--blanco-calido), var(--crema));
+  border: 1px solid var(--borde);
+  border-radius: 28px;
+  box-shadow: var(--sombra);
+}
+
+.pub-experiencia__contenido {
+  max-width: 640px;
+}
+
+.pub-experiencia h2 {
+  color: var(--marron);
+  font-size: clamp(2.1rem, 4.5vw, 3.2rem);
+  line-height: 1.08;
+}
+
+.pub-experiencia h2 em {
+  color: var(--vino);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.pub-experiencia__intro {
+  max-width: 52ch;
+  margin-top: 18px;
+  color: var(--texto-suave);
+  font-size: 1.02rem;
+  line-height: 1.8;
+}
+
+.pub-experiencia__pasos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  padding: 0;
+  margin: 32px 0 0;
+  list-style: none;
+}
+
+.pub-experiencia__pasos li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding-top: 14px;
+  border-top: 1px solid var(--borde);
+}
+
+.pub-experiencia__paso-numero {
+  flex: 0 0 auto;
+  color: var(--terracota);
+  font-family: var(--fuente-titulo);
+  font-size: 1.1rem;
+  line-height: 1.1;
+}
+
+.pub-experiencia__pasos strong {
+  display: block;
+  color: var(--marron);
+  font-family: var(--fuente-titulo);
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.pub-experiencia__pasos small {
+  display: block;
+  margin-top: 2px;
+  color: var(--texto-tenue);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.pub-experiencia__precio {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+  padding: 32px;
+  overflow: hidden;
+  color: var(--crema);
+  text-align: center;
+  background: var(--marron-oscuro);
+  border-radius: 22px;
+  box-shadow: 0 24px 50px rgba(36, 26, 23, 0.24);
+}
+
+.pub-experiencia__precio::before {
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 220px;
+  height: 220px;
+  content: '';
+  border: 1px solid rgba(196, 108, 61, 0.4);
+  border-radius: 50%;
+  box-shadow: 0 0 0 32px rgba(196, 108, 61, 0.06);
+}
+
+.pub-experiencia__precio-eyebrow {
+  position: relative;
+  color: var(--terracota);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.pub-experiencia__precio-cifra {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 4px;
+  color: var(--crema);
+  font-family: var(--fuente-titulo);
+  font-size: clamp(3.6rem, 7vw, 5rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.pub-experiencia__precio-cifra span {
+  color: var(--terracota);
+  font-family: var(--fuente-texto);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.pub-experiencia__precio-nota {
+  position: relative;
+  color: var(--texto-claro);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+}
+
+.pub-experiencia__precio-separador {
+  position: relative;
+  width: 48px;
+  height: 1px;
+  margin: 20px 0;
+  background: var(--marron-borde);
+}
+
+.pub-experiencia__precio small {
+  position: relative;
+  color: var(--texto-pie);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.pub-cursos {
+  display: grid;
+  gap: clamp(56px, 8vw, 88px);
+}
+
+.pub-curso-bloque__cabecera {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding-bottom: 20px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--borde);
+}
+
+.pub-curso-bloque__numero {
+  flex: 0 0 auto;
+  min-width: 42px;
+  color: var(--terracota);
+  font-family: var(--fuente-titulo);
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.pub-curso-bloque__titulos {
+  flex: 1;
+  max-width: 640px;
+}
+
+.pub-curso-bloque__etiqueta {
+  color: var(--terracota);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.pub-curso-bloque h3 {
+  margin-top: 2px;
+  color: var(--marron);
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  line-height: 1.1;
+}
+
+.pub-curso-bloque__titulos > p:last-child {
+  margin-top: 6px;
+  color: var(--texto-tenue);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.pub-curso-bloque__vacio {
+  padding: 24px;
+  color: var(--texto-tenue);
+  font-size: 0.9rem;
+  font-style: italic;
+  text-align: center;
+  background: rgba(255, 253, 249, 0.55);
+  border: 1px dashed var(--borde);
+  border-radius: 16px;
+}
+
+.pub-platos-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.pub-plato-card {
+  overflow: hidden;
+  background: var(--blanco-calido);
+  border: 1px solid var(--borde-suave);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(61, 47, 43, 0.07);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.pub-plato-card:hover {
+  box-shadow: 0 22px 44px rgba(61, 47, 43, 0.13);
+  transform: translateY(-4px);
+}
+
+.pub-plato-card__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--beige);
+}
+
+.pub-plato-card__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pub-plato-card:hover .pub-plato-card__media img {
+  transform: scale(1.045);
+}
+
+.pub-plato-card__badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 7px 12px;
+  color: var(--marron);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: rgba(255, 253, 249, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(36, 26, 23, 0.12);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.pub-plato-card__cuerpo {
+  padding: 22px 24px 26px;
+}
+
+.pub-plato-card h4 {
+  color: var(--vino);
+  font-size: 1.45rem;
+  line-height: 1.15;
+}
+
+.pub-plato-card__cuerpo p {
+  margin-top: 10px;
+  color: var(--texto-suave);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.pub-plato-card__fallback {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  background:
+    radial-gradient(
+      circle at 30% 20%,
+      rgba(196, 108, 61, 0.28),
+      transparent 55%
+    ),
+    linear-gradient(135deg, #e8e0d5, #d8c8b5);
+}
+
+.pub-plato-card__fallback span {
+  color: rgba(92, 36, 32, 0.6);
+  font-family: var(--fuente-titulo);
+  font-size: 4.5rem;
+}
+
+.pub-menu-nota {
+  max-width: 620px;
+  margin: clamp(40px, 6vw, 56px) auto 0;
+  color: var(--texto-tenue);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.pub-menu-estado {
+  max-width: 620px;
+  padding: clamp(28px, 5vw, 44px);
+  margin: 0 auto;
+  text-align: center;
+  background: var(--blanco-calido);
+  border: 1px solid var(--borde);
+  border-radius: 20px;
+  box-shadow: var(--sombra);
+}
+
+.pub-menu-estado strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--vino);
+  font-family: var(--fuente-titulo);
+  font-size: 1.6rem;
+  font-weight: 400;
+}
+
+.pub-menu-estado p {
+  color: var(--texto-suave);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.pub-esqueleto {
+  display: block;
+  background: linear-gradient(90deg, #ddcfbe 25%, #f2e9dd 40%, #ddcfbe 60%);
+  background-size: 300% 100%;
+  border-radius: 6px;
+  animation: pub-brillo 1.5s ease-in-out infinite;
+}
+
+.pub-esqueleto--numero {
+  width: 42px;
+  height: 28px;
+  border-radius: 4px;
+}
+
+.pub-esqueleto--etiqueta {
+  width: 90px;
+  height: 10px;
+  margin-bottom: 10px;
+}
+
+.pub-esqueleto--titulo {
+  width: min(280px, 70%);
+  height: 28px;
+  margin-bottom: 10px;
+}
+
+.pub-esqueleto--texto {
+  width: min(420px, 90%);
+  height: 12px;
+}
+
+.pub-esqueleto--nombre {
+  width: 65%;
+  height: 22px;
+  margin-bottom: 14px;
+}
+
+.pub-esqueleto--linea {
+  width: 100%;
+  height: 11px;
+  margin-bottom: 8px;
+}
+
+.pub-esqueleto--corta {
+  width: 72%;
+}
+
+.pub-plato-card--esqueleto {
+  pointer-events: none;
+}
+
+.pub-plato-card--esqueleto:hover {
+  box-shadow: 0 10px 30px rgba(61, 47, 43, 0.07);
+  transform: none;
+}
+
+.pub-plato-card--esqueleto .pub-plato-card__media {
+  border-radius: 0;
+}
+
+@keyframes pub-brillo {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pub-plato-card,
+  .pub-plato-card__media img,
+  .pub-esqueleto {
+    transition: none;
+    animation: none;
+  }
 }
 
 .pub-sistema {
@@ -2163,6 +2613,46 @@ tbody tr:last-child td {
   .pub-testimonios__grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 32px;
+  }
+
+  .pub-platos-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 960px) {
+  .pub-experiencia {
+    grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.65fr);
+    gap: 48px;
+  }
+}
+
+@media (max-width: 560px) {
+  .pub-experiencia {
+    padding: 24px;
+    border-radius: 20px;
+  }
+
+  .pub-experiencia__pasos {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .pub-experiencia__pasos li {
+    padding-top: 10px;
+  }
+
+  .pub-plato-card__cuerpo {
+    padding: 18px 20px 22px;
+  }
+
+  .pub-curso-bloque__cabecera {
+    gap: 14px;
+  }
+
+  .pub-curso-bloque__numero {
+    min-width: 32px;
+    font-size: 1.3rem;
   }
 }
 

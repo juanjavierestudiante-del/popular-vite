@@ -10,20 +10,46 @@ import {
   X,
 } from "lucide-react";
 import { supabase } from "../../services/supabaseClient";
-import { money } from "../../shared/utils/domain";
 import Brand from "../../shared/components/Brand";
 
-const ORDEN_CATEGORIAS = [
-  "Entradas",
-  "Platos fuertes",
-  "Desayunos",
-  "Postres",
-  "Bebidas",
+const PRECIO_MENU = 89;
+
+const EXPERIENCIA = [
+  {
+    id: "entradas",
+    numero: "01",
+    titulo: "Para Empezar",
+    etiqueta: "Entrada",
+    descripcion:
+      "Bocados frescos y profundos para abrir el apetito con producto de temporada.",
+  },
+  {
+    id: "fuertes",
+    numero: "02",
+    titulo: "El Fuerte",
+    etiqueta: "Plato fuerte",
+    descripcion:
+      "El corazón del menú: técnica, fuego y sabores de nuestra tierra.",
+  },
+  {
+    id: "postres",
+    numero: "03",
+    titulo: "El Dulce Final",
+    etiqueta: "Postre",
+    descripcion:
+      "El cierre dulce de la experiencia, con frutas y chocolate boliviano.",
+  },
 ];
 
-const ORDEN_NORMALIZADO = ORDEN_CATEGORIAS.map((categoria) =>
-  categoria.toLocaleLowerCase("es")
-);
+const CATEGORIA_A_CURSO = {
+  entradas: "entradas",
+  entrada: "entradas",
+  "platos fuertes": "fuertes",
+  "plato fuerte": "fuertes",
+  principales: "fuertes",
+  postres: "postres",
+  postre: "postres",
+};
 
 const ENLACES = [
   { nombre: "Inicio", href: "#inicio" },
@@ -53,35 +79,30 @@ const TESTIMONIOS = [
   },
 ];
 
-function agruparPorCategoria(platos) {
-  const grupos = new Map();
+function normalizarCategoria(categoria) {
+  return String(categoria || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLocaleLowerCase("es");
+}
+
+function agruparExperiencia(platos) {
+  const grupos = new Map(EXPERIENCIA.map((curso) => [curso.id, []]));
+
   platos.forEach((plato) => {
-    const categoria = (plato.categoria || "Otros").trim() || "Otros";
-    if (!grupos.has(categoria)) grupos.set(categoria, []);
-    grupos.get(categoria).push(plato);
+    const curso = CATEGORIA_A_CURSO[normalizarCategoria(plato.categoria)];
+    if (curso) grupos.get(curso).push(plato);
   });
 
-  return [...grupos.entries()]
-    .map(([categoria, items]) => ({
-      categoria,
-      platos: [...items].sort((a, b) =>
+  return EXPERIENCIA.map((curso) => ({
+    ...curso,
+    platos: grupos
+      .get(curso.id)
+      .sort((a, b) =>
         String(a.nombre || "").localeCompare(String(b.nombre || ""), "es")
       ),
-    }))
-    .sort((a, b) => {
-      const posA = ORDEN_NORMALIZADO.indexOf(
-        a.categoria.toLocaleLowerCase("es")
-      );
-      const posB = ORDEN_NORMALIZADO.indexOf(
-        b.categoria.toLocaleLowerCase("es")
-      );
-      if (posA !== -1 || posB !== -1) {
-        if (posA === -1) return 1;
-        if (posB === -1) return -1;
-        return posA - posB;
-      }
-      return a.categoria.localeCompare(b.categoria, "es");
-    });
+  }));
 }
 
 function NavEnlace({ enlace, onClick }) {
@@ -143,8 +164,15 @@ export default function PublicSite() {
     return () => window.removeEventListener("scroll", alDesplazar);
   }, []);
 
-  const grupos = useMemo(() => agruparPorCategoria(platos), [platos]);
-  const totalCategorias = grupos.length;
+  const grupos = useMemo(() => agruparExperiencia(platos), [platos]);
+  const totalPlatos = useMemo(
+    () => grupos.reduce((total, grupo) => total + grupo.platos.length, 0),
+    [grupos]
+  );
+  const totalCategorias = useMemo(
+    () => grupos.filter((grupo) => grupo.platos.length > 0).length,
+    [grupos]
+  );
 
   function cerrarMenu() {
     setMenuMovil(false);
@@ -228,6 +256,7 @@ export default function PublicSite() {
 
         <SeccionMenu
           grupos={grupos}
+          totalPlatos={totalPlatos}
           cargando={cargando}
           error={error}
           alReintentar={cargarCarta}
@@ -235,7 +264,7 @@ export default function PublicSite() {
 
         <SeccionSistema
           totalCategorias={totalCategorias}
-          totalPlatos={platos.length}
+          totalPlatos={totalPlatos}
           cargando={cargando}
         />
 
@@ -292,26 +321,19 @@ function Concepto() {
   );
 }
 
-function SeccionMenu({ grupos, cargando, error, alReintentar }) {
+function SeccionMenu({ grupos, totalPlatos, cargando, error, alReintentar }) {
+  const hayPlatos = totalPlatos > 0;
+
   return (
     <section id="menu" className="pub-seccion pub-menu-seccion">
-      <div className="pub-contenedor pub-contenedor--angosto">
-        <header className="pub-encabezado">
-          <p className="pub-eyebrow">Carta publicada</p>
-          <h2>Nuestro Menú</h2>
-          <p>Platos y precios publicados desde el sistema del restaurante.</p>
-        </header>
+      <div className="pub-contenedor">
+        <Experiencia />
 
-        {cargando && (
-          <div className="pub-menu pub-menu--estado" role="status">
-            <strong>Consultando la carta</strong>
-            <p>Estamos leyendo el menú publicado por el restaurante.</p>
-          </div>
-        )}
+        {cargando && <MenuSkeleton />}
 
         {!cargando && error && (
-          <div className="pub-menu pub-menu--estado" role="alert">
-            <strong>No se pudo cargar la carta</strong>
+          <div className="pub-menu-estado" role="alert">
+            <strong>No pudimos cargar la carta</strong>
             <p>{error}</p>
             <button
               className="pub-estado__reintentar"
@@ -323,54 +345,185 @@ function SeccionMenu({ grupos, cargando, error, alReintentar }) {
           </div>
         )}
 
-        {!cargando && !error && grupos.length === 0 && (
-          <div className="pub-menu pub-menu--estado">
-            <strong>La carta todavía no está publicada</strong>
-            <p>Vuelve a consultarla más tarde.</p>
+        {!cargando && !error && !hayPlatos && (
+          <div className="pub-menu-estado" role="status">
+            <strong>La carta de esta semana aún no está publicada</strong>
+            <p>
+              Vuelve a consultarla más tarde. Estamos preparando la próxima
+              experiencia.
+            </p>
           </div>
         )}
 
-        {!cargando && !error && grupos.length > 0 && (
-          <article className="pub-menu">
-            <header className="pub-menu__cabecera">
-              <h3>Carta del restaurante</h3>
-              <p>
-                {grupos.length}{" "}
-                {grupos.length === 1 ? "categoría" : "categorías"} ·{" "}
-                {grupos.reduce((total, grupo) => total + grupo.platos.length, 0)}{" "}
-                platos disponibles
-              </p>
-            </header>
-
-            <div className="pub-menu__cursos">
+        {!cargando && !error && hayPlatos && (
+          <>
+            <div className="pub-cursos">
               {grupos.map((grupo) => (
-                <section className="pub-curso" key={grupo.categoria}>
-                  <h4>{grupo.categoria}</h4>
-                  <ul className="pub-curso__lista">
-                    {grupo.platos.map((plato) => (
-                      <li className="pub-plato" key={plato.id}>
-                        <div>
-                          <h5>{plato.nombre}</h5>
-                          {plato.descripcion && <p>{plato.descripcion}</p>}
-                        </div>
-                        <span className="pub-plato__precio">
-                          {money(plato.precio)}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
+                <Curso key={grupo.id} grupo={grupo} />
               ))}
             </div>
 
-            <p className="pub-menu__nota">
-              Los precios corresponden a cada plato publicado. La carta se
-              actualiza desde el sistema del restaurante.
+            <p className="pub-menu-nota">
+              El precio del menú completo es por persona e incluye una opción
+              de cada tiempo.
             </p>
-          </article>
+          </>
         )}
       </div>
     </section>
+  );
+}
+
+function Experiencia() {
+  return (
+    <header className="pub-experiencia">
+      <div className="pub-experiencia__contenido">
+        <p className="pub-eyebrow">Nuestra carta</p>
+        <h2>
+          Una experiencia de <em>tres tiempos</em>
+        </h2>
+        <p className="pub-experiencia__intro">
+          Una experiencia de 3 tiempos inspirada en los sabores de Bolivia.
+          Elige una opción por cada etapa.
+        </p>
+
+        <ol className="pub-experiencia__pasos">
+          {EXPERIENCIA.map((curso) => (
+            <li key={curso.id}>
+              <span className="pub-experiencia__paso-numero" aria-hidden="true">
+                {curso.numero}
+              </span>
+              <span>
+                <strong>{curso.titulo}</strong>
+                <small>{curso.etiqueta}</small>
+              </span>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div className="pub-experiencia__precio">
+        <span className="pub-experiencia__precio-eyebrow">
+          Precio del menú completo
+        </span>
+        <strong className="pub-experiencia__precio-cifra">
+          <span>Bs.</span> {PRECIO_MENU}
+        </strong>
+        <span className="pub-experiencia__precio-nota">
+          por persona · 3 tiempos
+        </span>
+        <span
+          className="pub-experiencia__precio-separador"
+          aria-hidden="true"
+        />
+        <small>Entrada + plato fuerte + postre</small>
+      </div>
+    </header>
+  );
+}
+
+function Curso({ grupo }) {
+  const tituloId = `curso-${grupo.id}`;
+
+  return (
+    <section className="pub-curso-bloque" aria-labelledby={tituloId}>
+      <header className="pub-curso-bloque__cabecera">
+        <span className="pub-curso-bloque__numero" aria-hidden="true">
+          {grupo.numero}
+        </span>
+        <div className="pub-curso-bloque__titulos">
+          <p className="pub-curso-bloque__etiqueta">{grupo.etiqueta}</p>
+          <h3 id={tituloId}>{grupo.titulo}</h3>
+          <p>{grupo.descripcion}</p>
+        </div>
+      </header>
+
+      {grupo.platos.length > 0 ? (
+        <div className="pub-platos-grid">
+          {grupo.platos.map((plato) => (
+            <PlatoCard key={plato.id} plato={plato} etiqueta={grupo.etiqueta} />
+          ))}
+        </div>
+      ) : (
+        <p className="pub-curso-bloque__vacio">
+          Las opciones de este tiempo se publican cada semana.
+        </p>
+      )}
+    </section>
+  );
+}
+
+function PlatoCard({ plato, etiqueta }) {
+  const [imagenFallida, setImagenFallida] = useState(false);
+  const mostrarImagen = Boolean(plato.imagen_url) && !imagenFallida;
+
+  return (
+    <article className="pub-plato-card">
+      <div className="pub-plato-card__media">
+        {mostrarImagen ? (
+          <img
+            src={plato.imagen_url}
+            alt={plato.nombre}
+            loading="lazy"
+            decoding="async"
+            onError={() => setImagenFallida(true)}
+          />
+        ) : (
+          <div className="pub-plato-card__fallback" aria-hidden="true">
+            <span>{plato.nombre?.trim().charAt(0) || "P"}</span>
+          </div>
+        )}
+        <span className="pub-plato-card__badge">{etiqueta}</span>
+      </div>
+
+      <div className="pub-plato-card__cuerpo">
+        <h4>{plato.nombre}</h4>
+        {plato.descripcion && <p>{plato.descripcion}</p>}
+      </div>
+    </article>
+  );
+}
+
+function MenuSkeleton() {
+  return (
+    <div
+      className="pub-cursos"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+    >
+      <span className="sr-only">Cargando la carta de la semana…</span>
+      {EXPERIENCIA.map((curso) => (
+        <section className="pub-curso-bloque" key={curso.id}>
+          <header className="pub-curso-bloque__cabecera">
+            <span className="pub-curso-bloque__numero" aria-hidden="true">
+              <span className="pub-esqueleto pub-esqueleto--numero" />
+            </span>
+            <div className="pub-curso-bloque__titulos">
+              <span className="pub-esqueleto pub-esqueleto--etiqueta" />
+              <span className="pub-esqueleto pub-esqueleto--titulo" />
+              <span className="pub-esqueleto pub-esqueleto--texto" />
+            </div>
+          </header>
+
+          <div className="pub-platos-grid">
+            {[0, 1].map((indice) => (
+              <article
+                className="pub-plato-card pub-plato-card--esqueleto"
+                key={indice}
+              >
+                <div className="pub-plato-card__media pub-esqueleto" />
+                <div className="pub-plato-card__cuerpo">
+                  <span className="pub-esqueleto pub-esqueleto--nombre" />
+                  <span className="pub-esqueleto pub-esqueleto--linea" />
+                  <span className="pub-esqueleto pub-esqueleto--linea pub-esqueleto--corta" />
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
   );
 }
 
@@ -384,9 +537,9 @@ function SeccionSistema({ totalCategorias, totalPlatos, cargando }) {
           </p>
           <h2>La carta, siempre al día</h2>
           <p className="pub-sistema__texto">
-            Los platos, precios y la disponibilidad que ves en esta página se
-            consultan directamente en el sistema interno del restaurante. No
-            mostramos platos ni precios de ejemplo.
+            La carta y la disponibilidad que ves en esta página se consultan
+            directamente en el sistema interno del restaurante. No mostramos
+            platos de ejemplo.
           </p>
 
           <div className="pub-sistema__datos">
@@ -416,15 +569,15 @@ function SeccionSistema({ totalCategorias, totalPlatos, cargando }) {
 
           <div className="pub-sistema__resumen">
             <div>
-              <span>Carta</span>
-              <strong>Restaurante</strong>
+              <span>Experiencia</span>
+              <strong>3 tiempos</strong>
             </div>
             <div>
-              <span>Categorías</span>
+              <span>Tiempos publicados</span>
               <strong>{cargando ? "—" : totalCategorias}</strong>
             </div>
             <div>
-              <span>Platos publicados</span>
+              <span>Opciones disponibles</span>
               <strong>{cargando ? "—" : totalPlatos}</strong>
             </div>
           </div>
